@@ -1,0 +1,47 @@
+{
+  "_설명": "사용자가 요청한 내용을 측정 가능한 항목으로 기록하는 곳. 새 요청이 오면 여기에 항목을 추가한 뒤 구현하고 `python3 -I qa/qa.py check --only <id>` 로 확인한다. type: text / fontPx / exists / js / motion. 좌표 region 은 무대 대비 0~1 비율(x0,y0,x1,y1).",
+  "requirements": [
+    {
+      "id": "P01-title-text",
+      "desc": "1페이지 제목 문구",
+      "slide": 1, "type": "text", "selector": ".opening-titles h1", "equals": "HRA 2026 Year-End Party"
+    },
+    {
+      "id": "P01-title-60pt",
+      "desc": "1페이지 제목 60pt (1920×1080에서 80px)",
+      "slide": 1, "viewport": [1920, 1080], "type": "fontPx", "selector": ".opening-titles h1", "px": 80, "tol": 1.0
+    },
+    {
+      "id": "P01-subtitle-text",
+      "desc": "1페이지 가제 문구",
+      "slide": 1, "type": "text", "selector": ".opening-subtitle", "equals": "welcome to hra-wart"
+    },
+    {
+      "id": "P01-subtitle-35pt",
+      "desc": "1페이지 가제 35pt (1920×1080에서 46.67px)",
+      "slide": 1, "viewport": [1920, 1080], "type": "fontPx", "selector": ".opening-subtitle", "px": 46.67, "tol": 1.0
+    },
+    {
+      "id": "P01-canvas",
+      "desc": "1페이지에 호수·성 연출 캔버스가 있음",
+      "slide": 1, "type": "exists", "selector": ".opening-canvas"
+    },
+    {
+      "id": "P01-water-moves",
+      "desc": "1페이지 호수 물결이 계속 일렁임 (카메라 정지 구간)",
+      "slide": 1, "type": "motion", "t0": 11, "dur": 3, "fps": 4, "size": [1280, 720],
+      "region": [0.45, 0.78, 0.7, 0.97], "minMeanDiff": 0.4, "maxMeanDiff": 12
+    },
+    {
+      "id": "P01-boat-bobs",
+      "desc": "1페이지 오른쪽 큰 배가 물결 따라 움직이되 과하지 않음",
+      "slide": 1, "type": "motion", "t0": 11, "dur": 6, "fps": 4, "size": [1280, 720],
+      "region": [0.76, 0.6, 1.0, 0.86], "minMeanDiff": 0.15, "maxMeanDiff": 8
+    },
+    {
+      "id": "P01-no-leftover-chrome",
+      "desc": "발표 모드에서는 상단·하단 바가 없어 무대만 보임",
+      "slide": 1, "type": "js", "expr": "getComputedStyle(document.querySelector('.top')).display === 'none' && getComputedStyle(document.querySelector('.controls')).display === 'none'"
+    }
+  ]
+}

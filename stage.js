@@ -1,5 +1,5 @@
 const slides = [
-  ['입장 대기', '해피 크리스마스, 흐라', '검은 호수를 건너, 오늘 밤의 연회로.', 'hero'],
+  ['입장 대기', 'HRA 2026 Year-End Party', 'welcome to hra-wart', 'hero opening'],
   ['오프닝', '입학통지서', 'HRA 마법학교의 겨울 연회에 여러분을 초대합니다.', 'paper', '✦'],
   ['개회', '대연회장의 문이 열립니다', '기숙사 대항전 · 크리스마스 만찬 · 명예의 전당', 'wine', '✧'],
   ['내빈 소개', '오늘의 귀빈', '교수님과 멘토진, 후원진, 선배님들을 소개합니다.', '', 'guests'],
@@ -50,6 +50,7 @@ let presenterWindow;
 let staged = false;
 let revealed = false;
 let captionJob;
+let lastRendered = -1;
 const revealLabels = new Map([[1, '봉인 열기'], [9, '정답 공개'], [12, '현재 사진 공개'], [18, '순위 공개'], [21, '시상 공개']]);
 const cueLabels = new Map([[3, '다음 학생증'], [11, '15초 시작'], [14, '영상 재생'], [16, '빙고 시작'], [19, '휴식 시작']]);
 const origin = location.protocol === 'file:' ? '*' : location.origin;
@@ -312,7 +313,7 @@ function render() {
   stopTimer();
   const [chapter, title, description, theme, content] = slides[index];
   const page = String(index + 1).padStart(2, '0');
-  slide.className = 'slide ' + theme + (theme === 'hero' ? '' : ' center');
+  slide.className = 'slide ' + theme + (theme === 'hero' || index === 0 ? '' : ' center');
   slide.dataset.content = content ?? '';
   slide.dataset.page = page;
   slide.style.setProperty('--scene-image', 'url("./scenes/p' + page + '.webp")');
@@ -320,9 +321,18 @@ function render() {
   frame.setAttribute('aria-hidden', 'true');
   for (let corner = 0; corner < 4; corner++) frame.append(node('span', '❦'));
   slide.replaceChildren(frame, node('span', 'HRA', 'mark'));
-  if (content && !sceneBodies[content]) slide.append(node('div', content, 'ornament'));
-  slide.append(node('p', index === 0 ? 'HRA 2026  /  YEAR-END PARTY' : chapter, 'eyebrow'), node('h1', title));
-  if (description) slide.append(node('p', description, 'description'));
+  if (index === 0) {
+    window.HraOpening?.attach(slide, lastRendered !== 0);
+    const titles = node('div', '', 'opening-titles');
+    titles.append(node('h1', title), node('p', description, 'opening-subtitle'));
+    slide.append(titles);
+  } else {
+    window.HraOpening?.detach();
+    if (content && !sceneBodies[content]) slide.append(node('div', content, 'ornament'));
+    slide.append(node('p', chapter, 'eyebrow'), node('h1', title));
+    if (description) slide.append(node('p', description, 'description'));
+  }
+  lastRendered = index;
   if (sceneBodies[content]) {
     const body = node('div', '', 'scene-body');
     sceneBodies[content](body);
@@ -391,6 +401,7 @@ function notifyPresenter() {
   const reveal = !revealed && revealLabels.get(index);
   presenterWindow.postMessage({
     hra: 'stage', index, title: slides[index][1], next: next?.[0], scores: state.scores,
+    total: slides.length, agenda: slides.map(item => item[0]), blank: document.body.dataset.blank || '',
     actionLabel: reveal || (index === 8 && chosenCandidate !== null && !answerLocked ? '답안 확정' : cueLabels.get(index)) || '',
   }, origin);
 }
@@ -405,9 +416,21 @@ get('presenter').addEventListener('click', () => {
 });
 
 addEventListener('message', event => {
-  if (event.source !== presenterWindow || (origin !== '*' && event.origin !== origin)) return;
   const data = event.data;
-  if (data?.hra !== 'presenter') return;
+  if (data?.hra !== 'presenter' || (origin !== '*' && event.origin !== origin)) return;
+  // 무대를 새로고침해도, 이 창이 연 사회자 창이면 다시 연결한다
+  if ((data.action === 'ready' || data.action === 'ping') && event.source?.opener === window) {
+    const fresh = presenterWindow !== event.source;
+    presenterWindow = event.source;
+    if (data.action === 'ping') {
+      if (fresh || !staged) {
+        staged = true;
+        render();
+      } else notifyPresenter();
+      return;
+    }
+  }
+  if (event.source !== presenterWindow) return;
   switch (data.action) {
     case 'ready':
       staged = true;
@@ -421,6 +444,14 @@ addEventListener('message', event => {
       break;
     case 'cue':
       runCue();
+      break;
+    case 'goto': {
+      const target = Number(data.text);
+      if (Number.isInteger(target)) go(target - 1);
+      break;
+    }
+    case 'blank':
+      window.HraPresent?.setBlank(data.text);
       break;
     case 'caption':
       setCaption(data.text);
@@ -442,7 +473,10 @@ addEventListener('message', event => {
 
 function go(position) {
   if (position < 0 || position >= slides.length || position === index) return;
-  location.hash = 'p' + (position + 1);
+  const move = () => { location.hash = 'p' + (position + 1); };
+  // 1페이지에서 다음으로 넘어갈 때는 카메라가 성 안으로 들어간 뒤 이동
+  if (index === 0 && position === 1 && window.HraOpening?.enter(move)) return;
+  move();
 }
 
 function openOperator() {
@@ -546,14 +580,14 @@ get('next').addEventListener('click', () => go(index + 1));
 async function fullscreen() {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else await get('stage').requestFullscreen();
+    else await document.querySelector('.workspace').requestFullscreen();
   } catch {
     get('fullscreen').textContent = '전체화면 사용 불가';
   }
 }
 document.addEventListener('fullscreenchange', () => {
-  const parent = document.fullscreenElement === get('stage') ? get('stage') : document.body;
-  parent.append(get('agenda'), get('operator'));
+  const parent = document.fullscreenElement === document.querySelector('.workspace') ? document.fullscreenElement : document.body;
+  parent.append(get('agenda'), get('operator'), get('help'));
 });
 get('fullscreen').addEventListener('click', fullscreen);
 document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => el.closest('dialog').close()));
@@ -567,16 +601,18 @@ slides.forEach(([chapter], i) => {
 });
 document.addEventListener('keydown', event => {
   if (document.querySelector('dialog[open]') || event.target.matches('input,video,textarea,select')) return;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (['ArrowRight', 'PageDown', 'ArrowLeft', 'PageUp', 'Home', 'End'].includes(event.key)) {
     event.preventDefault();
+    if (event.repeat) return;
     if (event.key === 'Home') go(0);
     else if (event.key === 'End') go(slides.length - 1);
     else go(index + (['ArrowRight', 'PageDown'].includes(event.key) ? 1 : -1));
-  } else if (event.key.toLowerCase() === 'f') fullscreen();
-  else if (event.key.toLowerCase() === 'o') openOperator();
+  } else if (event.code === 'KeyF') fullscreen();   // event.code: 한글 입력 상태에서도 동작
+  else if (event.code === 'KeyO') openOperator();
   else if (event.key === ' ' && event.target === document.body) {
     event.preventDefault();
-    runCue();
+    if (!event.repeat) runCue();
   }
 });
 function restorePosition() {
@@ -602,3 +638,4 @@ addEventListener('storage', event => {
   if (index === 3 || index === 18) render();
 });
 restorePosition();
+window.HraStage = { go: n => go(n - 1), step: d => go(index + d), get index() { return index; }, total: slides.length, notify: notifyPresenter, fullscreen };

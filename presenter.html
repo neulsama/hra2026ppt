@@ -12,9 +12,19 @@
   <main>
     <p class="presenter-label">HRA 2026 / 사회자 큐시트</p>
     <p id="connection" role="status">발표 화면에 연결하는 중</p>
+    <div class="presenter-status">
+      <span>현재 시각 <b id="clock">--:--</b></span>
+      <span>경과 <b id="elapsed">00:00</b> <button id="elapsed-reset" type="button">0으로</button></span>
+      <span id="blank-state" hidden></span>
+    </div>
     <div class="cue-navigation">
       <nav aria-label="슬라이드 이동"><button data-action="prev">← 이전</button><button data-action="next">다음 →</button></nav>
       <p id="cue-next"></p>
+    </div>
+    <div class="presenter-tools">
+      <label>장면 이동 <select id="cue-jump" disabled><option>연결 대기</option></select></label>
+      <button id="blank-black" type="button" disabled>검은 화면 (B)</button>
+      <button id="blank-white" type="button" disabled>흰 화면 (W)</button>
     </div>
     <h1 id="cue-title">사회자 보기</h1>
     <p id="cue-line" class="cue-line"></p>
@@ -34,6 +44,7 @@
         <button>점수 저장</button>
       </form>
     </details>
+    <p class="presenter-help">← → 이동 · Space 큐 실행 · B 검은 화면 · W 흰 화면 · 숫자 + Enter 장면 이동 · Home / End 처음 / 끝</p>
   </main>
 </body>
 </html>
