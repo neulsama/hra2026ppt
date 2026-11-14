@@ -15,8 +15,8 @@ button:disabled{opacity:.35;cursor:default}
 .top-title{color:var(--muted);letter-spacing:.18em;font-size:11px}
 .top-title i{display:inline-block;width:3px;height:3px;background:var(--gold);margin:0 .8em;vertical-align:middle}
 .tools,nav{display:flex;gap:8px}
-.workspace{display:grid;place-items:center;padding:12px 20px;min-width:0;min-height:0;container-type:size}
-.stage{position:relative;touch-action:pan-y;width:min(100%,calc((100dvh - 155px)*16/9));width:min(100cqw,calc(100cqh*16/9));aspect-ratio:16/9;container-type:inline-size;background:#0c1422;box-shadow:0 20px 80px #0008;overflow:hidden}
+.workspace{display:grid;place-items:center;padding:clamp(4px, 1.5vw, 16px);min-width:0;min-height:0;container-type:size;overflow:hidden}
+.stage{position:relative;touch-action:pan-y;width:min(100cqw,calc(100cqh*16/9));height:calc(min(100cqw,calc(100cqh*16/9))*9/16);aspect-ratio:16/9;container-type:inline-size;background:#0c1422;box-shadow:0 20px 80px #0008;overflow:hidden}
 .workspace:fullscreen{padding:0;background:#000}
 .slide{height:100%;position:relative;display:grid;align-content:center;padding:5% 8%;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 75% 25%,#263554,#111b31 56%,#090f1a);font-family:var(--serif)}
 .slide::before,.slide::after{position:absolute;content:"";inset:3%;pointer-events:none;z-index:-1;border:1px solid #d1a56b76}
@@ -218,27 +218,9 @@ dialog input[type=number]{width:5em}
 @media(max-width:630px){
   .top-title,.progress{display:none}
   .top,.controls{padding-inline:10px}
-  .workspace{padding:6px}
+  .workspace{padding:2px}
   .tools{gap:4px}
-  .tools button{padding-inline:.55em;font-size:13px}
-  .stage:not(.live){width:100%;aspect-ratio:4/3}
-  .slide h1{font-size:7.1cqw}
-  .slide .eyebrow{font-size:2.1cqw}
-  .slide .description,.slide .scene-body{font-size:3.1cqw}
-  .slide:not(.hero) .description{max-width:90%}
-  .slide .scene-body button{font-size:clamp(11px,3cqw,16px);min-height:40px}
-  .slide[data-content=quiz] .tiles,.slide[data-content=cards] .tiles{grid-template-columns:repeat(2,1fr);grid-auto-flow:row;gap:2cqw}
-  .slide[data-content=quiz] h1,.slide[data-content=photo] h1{font-size:5.8cqw}
-  .candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2cqw;width:75%}
-  .candidate-portrait{height:10cqw;object-position:center 23%}
-  .candidate-name{padding:.15em}
-  .question-controls .answer-status{font-size:10px}
-  .answer-feature{width:90%}
-  .slide[data-content=photo] .photo-demo{height:18cqw;width:29cqw}
-  .tile strong{font-size:3.3cqw}
-  .tile span,.note{font-size:2.5cqw}
-  .score-row{grid-template-columns:17cqw 1fr 12cqw}
-  .score-track{height:2cqw}
+  .tools button{padding-inline:.55em;font-size:12px}
   dialog ol{columns:1}
 }
 
@@ -281,3 +263,379 @@ kbd{font:600 .85em system-ui,sans-serif;padding:.1em .5em;border:1px solid var(-
 .presenter-tools{display:flex;flex-wrap:wrap;align-items:center;gap:.5em 1em;margin:.3em 0 .8em}
 .presenter-tools select{background:#0c121e;color:inherit;border:1px solid var(--line);padding:.45em .6em;max-width:100%}
 .presenter-help{margin-top:1.4em;color:var(--muted);font-size:.8rem;line-height:1.8}
+
+/* ===== 신규 영화 같은 시네마틱 슬라이드 연출 스타일 ===== */
+
+/* 1. 암전 (Blackout) */
+.slide.blackout{background:#000!important;padding:0;display:grid;place-items:center}
+.slide.blackout .scene-frame,.slide.blackout .mark,.slide.blackout .corner{display:none!important}
+
+/* 2페이지: 부엉이 날갯짓 & 물리적 양피지 언롤 (Parchment Unroll) */
+.owl-scene{
+  position:relative;width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding-top:1cqw;
+}
+.owl-character{
+  position:relative;width:16cqw;height:12cqw;z-index:10;
+  animation:owl-fly-in 1.4s cubic-bezier(.2,.8,.25,1) both;
+}
+.owl-svg{width:100%;height:100%;overflow:visible}
+.owl-wing-left{
+  transform-origin:70px 48px;
+  animation:owl-wing-left-beat .75s ease-in-out infinite alternate;
+}
+.owl-wing-right{
+  transform-origin:110px 48px;
+  animation:owl-wing-right-beat .75s ease-in-out infinite alternate;
+}
+.owl-beak-scroll{
+  position:absolute;bottom:1.5cqw;left:50%;transform:translateX(-50%);
+  width:4cqw;height:1.2cqw;background:#ddbf8e;border:1px solid #754f24;border-radius:3px;
+  box-shadow:0 3px 8px #0008;z-index:12;
+}
+
+/* 실제 부엉이 날갯짓 사이클: 상완과 관절을 접으며 올리고(Upstroke), 활짝 펴서 아래로 힘차게 내려침(Downstroke) */
+@keyframes owl-wing-left-beat{
+  0%{transform:rotate(18deg) scaleY(1.05) scaleX(1)}
+  35%{transform:rotate(-15deg) scaleY(.9) scaleX(.92)}
+  70%{transform:rotate(-48deg) scaleY(.72) scaleX(.85)}
+  100%{transform:rotate(-55deg) scaleY(.68) scaleX(.82)}
+}
+@keyframes owl-wing-right-beat{
+  0%{transform:rotate(-18deg) scaleY(1.05) scaleX(1)}
+  35%{transform:rotate(15deg) scaleY(.9) scaleX(.92)}
+  70%{transform:rotate(48deg) scaleY(.72) scaleX(.85)}
+  100%{transform:rotate(55deg) scaleY(.68) scaleX(.82)}
+}
+@keyframes owl-fly-in{
+  from{transform:translateY(-80px) scale(.4);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+
+/* 물리적 양피지 두루마리 시스템 */
+.parchment-unroll-system{
+  width:min(58cqw,92%);
+  margin-top:-1.2cqw;
+  position:relative;
+  z-index:5;
+  display:flex;flex-direction:column;align-items:center;
+}
+.parchment-roller{
+  width:104%;height:1.8cqw;
+  background:linear-gradient(180deg,#69411b 0%,#a87238 35%,#422409 75%,#261304 100%);
+  border-radius:4px;
+  border:1px solid #d4af3788;
+  box-shadow:0 6px 16px #000c;
+  display:flex;justify-content:space-between;align-items:center;padding:0 .5cqw;
+  z-index:8;
+}
+.roller-knob{
+  width:1.6cqw;height:2.4cqw;
+  background:radial-gradient(circle at 40% 35%,#ffd782,#aa7a2c 60%,#462b08);
+  border:1px solid #e5c68b;border-radius:2px;box-shadow:0 3px 8px #000;
+}
+.parchment-scroll-window{
+  width:100%;
+  height:0;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 15px 35px #000a;
+  animation:parchment-unroll-physics 2.4s cubic-bezier(.25,1,.35,1) 1.2s forwards;
+}
+.parchment-sheet-content{
+  position:absolute;top:0;left:0;width:100%;height:27cqw;
+  background:radial-gradient(ellipse at 50% 30%,#fdf5e2,#d9bc89 85%),url("./scenes/parchment.webp") center/cover;
+  border-inline:2px solid #8e632b;
+  box-shadow:inset 0 0 35px #744b1c3b;
+  padding:2.5cqw 3cqw;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  color:#1c0f08;
+}
+.parchment-sheet-content::before{
+  content:"";position:absolute;inset:1.2cqw;pointer-events:none;
+  border:1px solid #a3753877;outline:1px solid #754d1d44;outline-offset:2px;
+}
+.parchment-crest{
+  font:700 1.2cqw Georgia,serif;color:#6b401d;letter-spacing:.25em;text-transform:uppercase;margin-bottom:1cqw;
+}
+.parchment-korean{
+  font:700 3.3cqw/1.25 var(--serif);color:#1e1008;margin:0 0 .8cqw;letter-spacing:-.02em;
+  text-shadow:0 1px 2px #e3c49066;
+}
+.parchment-english{
+  font:italic 700 2.2cqw/1.2 Georgia,serif;color:#5a2b12;margin:0 0 1.2cqw;letter-spacing:.04em;
+}
+.parchment-seal{
+  font:600 1.1cqw var(--serif);color:#7e5227;letter-spacing:.15em;
+  border-top:1px solid #996e3866;padding-top:.6cqw;width:75%;margin:auto;
+}
+
+@keyframes parchment-unroll-physics{
+  0%{height:0}
+  100%{height:27cqw}
+}
+
+/* 3페이지: 부엉이 퇴장 실루엣 & 정하늘 교수님 초대형 명예 학생증 */
+.owl-fly-exit{
+  position:absolute;top:2cqw;right:4cqw;width:10cqw;height:7cqw;z-index:20;pointer-events:none;
+  animation:owl-depart 2s cubic-bezier(.25,1,.5,1) forwards;
+}
+@keyframes owl-depart{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(180px,-100px) scale(.25);opacity:0}
+}
+
+.faculty-id-card-giant{
+  width:min(68cqw,92%);
+  height:35cqw;
+  margin:.8cqw auto 0;
+  background:radial-gradient(ellipse at 35% 30%,#331c26,#120e1a 80%);
+  border:3px solid #e5c68b;
+  box-shadow:0 0 0 5px #482332,0 25px 60px #000e,0 0 45px #d4af3733;
+  border-radius:8px;
+  padding:2.5cqw 3.5cqw;
+  display:grid;
+  grid-template-columns:20cqw 1fr;
+  gap:3cqw;
+  align-items:center;
+  text-align:left;
+  position:relative;
+  animation:card-arrive .8s cubic-bezier(.16,1,.3,1) both;
+}
+.faculty-id-card-giant .guest-id-badge{
+  top:1.4cqw;right:2cqw;
+  font:700 1.1cqw Georgia,serif;color:var(--gold);
+  border:1px solid #e5c68b88;padding:.3em .8em;
+  background:#26121d99;
+}
+.faculty-photo-frame{
+  width:20cqw;height:27cqw;
+  background:#1a1120;
+  border:3px solid #dcae6b;
+  box-shadow:inset 0 0 20px #000c,0 6px 20px #000a,0 0 15px #d4af3722;
+  border-radius:4px;
+  overflow:hidden;
+  position:relative;
+}
+.faculty-photo-frame img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.faculty-info-box{display:flex;flex-direction:column;justify-content:center;gap:.7cqw}
+.faculty-tag{font:600 1.2cqw system-ui;color:var(--gold);letter-spacing:.2em;text-transform:uppercase}
+.faculty-giant-name{
+  font:700 4.6cqw/1.05 var(--serif);color:#fff2d9;margin:0;
+  text-shadow:0 2px 10px #000,0 0 20px #ffcf6844;
+}
+.faculty-dept{
+  font:700 2.4cqw/1.2 var(--serif);color:#e2c58e;margin:.2cqw 0 0;
+  text-shadow:0 2px 6px #000;
+}
+.faculty-role-desc{
+  font:500 1.4cqw/1.5 system-ui,sans-serif;color:#d8ccba;margin-top:.4cqw;
+}
+.faculty-seal-stamp{
+  margin-top:.8cqw;font:italic 1.15cqw var(--serif);color:#b3935a;
+  display:flex;align-items:center;gap:.6em;
+}
+.faculty-seal-stamp::before{
+  content:"✦";color:var(--gold);font-style:normal;font-size:1.2em;
+}
+
+/* 3. 교수님 학생증 (명예 교수증 대형 카드) */
+.guest-card-container{display:grid;place-items:center;width:100%;margin-top:1cqw}
+.guest-id-card{
+  width:min(52cqw,92%);
+  background:radial-gradient(ellipse at 50% 30%,#2a1b2d,#120f1c 70%);
+  border:2px solid #e5c68b;
+  box-shadow:0 0 0 4px #422934,0 20px 50px #000c,0 0 30px #d4af3740;
+  border-radius:6px;
+  padding:2.2cqw 3cqw;
+  display:grid;
+  grid-template-columns:14cqw 1fr;
+  gap:2.5cqw;
+  align-items:center;
+  text-align:left;
+  position:relative;
+  animation:card-arrive .7s cubic-bezier(.16,1,.3,1) both;
+}
+.guest-id-badge{
+  position:absolute;top:1cqw;right:1.5cqw;
+  font:700 .9cqw Georgia,serif;color:var(--gold);letter-spacing:.2em;
+  border:1px solid #d4af3766;padding:.2em .6em;border-radius:3px;
+}
+.guest-photo-slot{
+  width:14cqw;height:18cqw;
+  background:#1e1424;
+  border:2px solid #c9a05b;
+  box-shadow:inset 0 0 15px #000a,0 4px 12px #0008;
+  display:grid;place-items:center;
+  overflow:hidden;
+}
+.guest-photo-slot img{width:100%;height:100%;object-fit:cover}
+.guest-photo-placeholder{font:700 4cqw Georgia,serif;color:#dfba7c55}
+.guest-details{display:grid;gap:.6cqw}
+.guest-title{font:600 1.2cqw system-ui,sans-serif;color:var(--gold);letter-spacing:.15em;text-transform:uppercase}
+.guest-name{font:700 3.8cqw/1.1 var(--serif);color:#fff1d6;text-shadow:0 2px 8px #000}
+.guest-role{font:500 1.5cqw/1.4 system-ui,sans-serif;color:#dfd2be}
+.guest-seal{font:italic 1.1cqw var(--serif);color:#b3935a;margin-top:.4cqw}
+.guest-nav-controls{display:flex;align-items:center;justify-content:center;gap:1.5cqw;margin-top:1.2cqw}
+.guest-nav-controls button{font-size:1.2cqw;padding:.3em .9em}
+
+/* 4. 4개 기숙사 대형 배너 (Banners) */
+.house-banners-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1.4cqw;
+  width:min(88cqw,96%);
+  height:70%;
+  margin:1.5cqw auto 0;
+  align-items:stretch;
+}
+.house-banner{
+  background:#141724;
+  border:2px solid var(--banner-accent);
+  border-top:none;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  padding:2cqw 1cqw 3cqw;
+  box-shadow:0 15px 35px #000b,inset 0 0 30px #000a;
+  clip-path:polygon(0 0, 100% 0, 100% 88%, 50% 100%, 0 88%);
+  transform-origin:top center;
+  animation:banner-drop .85s cubic-bezier(.16,1,.3,1) both;
+}
+.house-banner:nth-child(1){animation-delay:.1s}
+.house-banner:nth-child(2){animation-delay:.3s}
+.house-banner:nth-child(3){animation-delay:.5s}
+.house-banner:nth-child(4){animation-delay:.7s}
+.banner-crest{font:700 4.2cqw Georgia,serif;color:var(--banner-accent);text-shadow:0 0 15px currentColor}
+.banner-name{font:700 2.2cqw var(--serif);color:#ffeed0;margin-top:.5cqw}
+.banner-sub{font:600 1.2cqw system-ui;letter-spacing:.2em;color:var(--banner-accent)}
+
+/* 5. 퀴즈 파노라마 필름 인트로 (Quiz Intro Reel) */
+.quiz-film-reel{
+  width:100%;overflow:hidden;margin-top:2cqw;padding:1.5cqw 0;
+  background:#090910;border-block:2px solid #b89356;
+  position:relative;
+}
+.film-track{
+  display:flex;gap:1.5cqw;
+  width:max-content;
+  animation:film-strip-fast 3s ease-out both;
+}
+.film-frame{
+  width:18cqw;height:11cqw;
+  background:#1e1a24;
+  border:1px solid #735730;
+  display:grid;place-items:center;
+  font:700 1.3cqw var(--serif);color:#e2c58e;
+  box-shadow:inset 0 0 20px #000b;
+}
+
+/* 6. 이름 빙고판 */
+.bingo-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1cqw;
+  width:min(68cqw,95%);
+  margin:1cqw auto 0;
+}
+.bingo-grid .tile{
+  min-height:5.5cqw;
+  padding:.8cqw;
+  font-size:1.45cqw;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .15s, background .2s;
+  text-align:center;
+  display:grid;place-items:center;
+}
+.bingo-grid .tile:hover{transform:scale(1.02);background:#e2c58e}
+.bingo-grid .tile.marked{background:#482030;color:#ffeed0;border-color:#d4af37;text-decoration:line-through}
+
+/* 7. 물약병 볼링 대형 점수판 (Scores Large) */
+.score-board-giant{
+  display:grid;gap:1.8cqw;
+  width:min(82cqw,96%);
+  margin:2.5cqw auto;
+  background:#0f101bf0;
+  border:2px solid #dcae6b88;
+  padding:2.5cqw 3cqw;
+  box-shadow:0 15px 45px #000c,0 0 25px #d4af3722;
+}
+.score-board-giant .score-row{
+  grid-template-columns:12cqw 1fr 10cqw;
+  gap:2.5cqw;
+  font-size:2cqw;
+}
+.score-board-giant .score-track{height:2.6cqw;background:#ffffff15;border-radius:3px;overflow:hidden}
+.score-board-giant .score-row strong{font-size:2.4cqw;font-family:var(--serif)}
+.score-board-giant .score-row span{font-size:2.5cqw;font-weight:700;color:var(--gold)}
+
+/* 8. 1위 기숙사 발표 (Champion Reveal) */
+.champion-spotlight{
+  display:grid;place-items:center;text-align:center;gap:1.5cqw;
+  margin-top:2cqw;
+  animation:reveal-in 1s cubic-bezier(.16,1,.3,1) both;
+}
+.champion-crown{font-size:6cqw;animation:bounce-crown 1.5s ease-in-out infinite}
+.champion-house-name{font:700 6.5cqw/1 var(--serif);color:#ffeac2;text-shadow:0 0 25px #ffcf6888,0 4px 10px #000}
+.champion-trophy-banner{
+  background:linear-gradient(135deg,#5e2535,#2a1324);
+  border:2px solid #e0b86c;
+  padding:.8cqw 2.5cqw;
+  font:700 2.2cqw Georgia,serif;color:var(--gold);
+  border-radius:4px;box-shadow:0 10px 25px #0008;
+}
+
+/* 9. 양피지 시상식 (Ballroom & Scrolls) */
+.scrolls-container{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2cqw;
+  width:min(86cqw,96%);
+  margin:2cqw auto 0;
+}
+.parchment-scroll{
+  background:radial-gradient(ellipse at 50% 30%,#fbf1db,#ddbf8e);
+  color:#29180f;
+  border:2px solid #8e622b;
+  border-radius:4px;
+  padding:2cqw 1.5cqw;
+  box-shadow:0 15px 35px #000c;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:1.2cqw;
+  position:relative;
+  transition:all .4s ease;
+  transform-origin:top center;
+}
+.parchment-scroll:hover{transform:translateY(-8px);box-shadow:0 25px 45px #000}
+.scroll-header{font:700 1.8cqw var(--serif);color:#562414;border-bottom:1px solid #7f512766;padding-bottom:.4cqw;width:100%}
+.scroll-winner{font:700 2.8cqw/1.1 var(--serif);color:#1c0e08;margin:.4cqw 0}
+.scroll-desc{font:500 1.2cqw/1.4 system-ui;color:#5a3c26}
+.scroll-badge{font:700 2.2cqw Georgia,serif;color:#a33b2a}
+
+/* 10. 단체사진 별빛 파티클 (Starfall) */
+.starfall-container{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.star-particle{
+  position:absolute;
+  background:radial-gradient(circle,#fff,#ffd778 60%,transparent);
+  border-radius:50%;
+  animation:star-float linear infinite;
+}
+
+@keyframes banner-drop{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes film-strip-fast{0%{transform:translateX(0)}60%{transform:translateX(-40%)}100%{transform:translateX(-25%)}}
+@keyframes bounce-crown{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.08)}}
+@keyframes star-float{
+  0%{transform:translateY(-20px) scale(0);opacity:0}
+  30%{opacity:1;transform:translateY(20cqh) scale(1)}
+  100%{transform:translateY(110cqh) scale(.3);opacity:0}
+}
+@keyframes card-arrive{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
+

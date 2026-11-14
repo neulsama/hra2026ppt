@@ -1,0 +1,4 @@
+node_modules/
+package-lock.json
+qa/out/shots/
+qa/out/test_caps/

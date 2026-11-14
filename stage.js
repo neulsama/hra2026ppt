@@ -1,45 +1,54 @@
 const slides = [
-  ['입장 대기', 'HRA 2026 Year-End Party', 'welcome to hra-wart', 'hero opening'],
-  ['오프닝', '입학통지서', 'HRA 마법학교의 겨울 연회에 여러분을 초대합니다.', 'paper', '✦'],
-  ['개회', '대연회장의 문이 열립니다', '기숙사 대항전 · 크리스마스 만찬 · 명예의 전당', 'wine', '✧'],
-  ['내빈 소개', '오늘의 귀빈', '교수님과 멘토진, 후원진, 선배님들을 소개합니다.', '', 'guests'],
-  ['내빈 명단 관리', '내빈 소개 준비', '운영 패널에서 시연 명단을 추가하거나 표시 여부를 바꿀 수 있습니다.', 'paper', 'staff'],
-  ['기숙사 대항전', '네 기숙사, 하나의 연회', '오늘 밤 함께 기숙사 컵에 도전합니다.', 'wine', 'houses'],
-  ['20기 소개', 'HRA 20기 학생증', '마법학교 신입생들을 소개합니다.', 'paper', 'students'],
-  ['1부 · 기억의 필름', '20기의 기억을 되감다', '전반기 수업과 활동을 함께 돌아봅니다.', 'hero', 'film'],
-  ['20기를 맞춰라 · 문제 01', '전반기에 가장 많이 발표한 사람은?', '기숙사별로 상의한 뒤 후보를 선택하세요.', '', 'quiz'],
-  ['20기를 맞춰라 · 정답 01', '정답 공개', '', 'paper', 'answer'],
-  ['1부 · 퀴즈 2', '봉인된 기억을 고르세요', '네 장의 카드 중 한 장을 선택하세요.', 'wine', 'cards'],
-  ['교수님을 맞혀라 · 문제 02', '이 어린이는 누구일까요?', '', '', 'photo'],
-  ['교수님을 맞혀라 · 정답 02', '정답 공개', '', 'paper', 'photo'],
-  ['만찬', '크리스마스 만찬', '함께 식사하며 오늘의 이야기를 나눠 주세요.', 'wine', '✦'],
-  ['20기 활동 영상', '기억의 극장', 'HRA 20기의 전반기 활동을 돌아봅니다.', '', 'video'],
-  ['2부 · 교류 빙고', '아홉 칸의 인맥 지도', '종이 빙고판을 들고 조건에 맞는 사람을 찾아보세요.', 'paper', 'bingo'],
-  ['2부 · 빙고 진행', '제한 시간 10분', '', '', 'timer'],
-  ['2부 · 물병 볼링', '물약병 볼링', '물병이 멈춘 구간에 따라 점수를 얻습니다.', 'paper', 'bowling'],
-  ['2부 · 최종 순위', '기숙사 컵 점수판', '퀴즈와 물병 볼링 합산 결과', '', 'scores'],
-  ['휴식', '잠시, 별빛 아래에서', '10분 뒤 명예의 전당에서 만나요.', 'hero', 'timer'],
-  ['3부 · 시상식', '명예의 전당', '오늘의 수상자들에게 축하를 전합니다.', 'wine', '✦'],
-  ['부문별 시상', '수상자를 소개합니다', '수상자 이름과 활동 사진을 공개합니다.', 'paper', 'awards'],
-  ['귀빈 말씀', '감사와 격려의 말씀', '교수님 격려 말씀 · 위원장 마무리 인사', '', '✧'],
-  ['단체사진 안내', '무대 앞으로 모여 주세요', '촬영 전 아래 순서대로 자리해 주세요.', 'paper', 'rows'],
-  ['기념 촬영', 'HRA 송년회', 'Happy Christmas, HR', 'hero photo-wall'],
-  ['폐회', '다음 목적지를 향해서', '오늘 밤의 여정에 함께해 주셔서 감사합니다.', 'hero'],
+  ['입장 대기', 'HRA 2026 Year-End Party', 'welcome to hra-wart', 'hero opening'], // 0
+  ['', '', '', 'wine', 'owl-parchment'], // 1: 2페이지 입학 축하 (부엉이 + 양피지 언롤)
+  ['', '내빈 소개', '', 'wine', 'guests'], // 2: 3페이지 내빈 소개 (정하늘 교수님 대형 학생증)
+  ['기숙사 배정', '네 기숙사, 하나의 연회', '오늘 밤 함께 기숙사 컵에 도전합니다.', 'wine', 'banners'], // 3
+  ['암전', '', '', 'blackout', 'blackout'], // 4
+  ['1부 · 퀴즈', '20기를 맞혀라', '활동 사진과 함께하는 전반기 퀴즈 대항전', 'hero', 'quiz-intro'], // 5
+  ['20기를 맞춰라 · 문제 01', '전반기에 가장 많이 발표한 사람은?', '기숙사별로 상의한 뒤 후보를 선택하세요.', '', 'quiz'], // 6
+  ['20기를 맞춰라 · 정답 01', '정답 공개', '', 'paper', 'answer'], // 7
+  ['잠시 숨고르기', '', '', 'hero interlude', 'interlude'], // 8
+  ['교수님을 맞혀라', '타임캡슐 속 어린 시절', '교수님의 어린 시절 사진을 보고 누구인지 맞혀보세요.', 'wine', 'photo-intro'], // 9
+  ['교수님을 맞혀라 · 문제 02', '이 어린이는 누구일까요?', '', '', 'photo'], // 10
+  ['교수님을 맞혀라 · 정답 02', '정답 공개', '', 'paper', 'photo'], // 11
+  ['크리스마스 만찬', 'Time for dinner', '함께 식사하며 오늘의 이야기를 나눠 주세요.', 'wine', '✦'], // 12
+  ['20기 활동 영상', '전반기 활동 영상', 'HRA 20기의 전반기 활동을 돌아봅니다.', '', 'video'], // 13
+  ['2부 · 교류 빙고', '이름 빙고', '종이 빙고판에 알맞은 사람을 적으세요.', 'paper', 'bingo'], // 14
+  ['2부 · 빙고 진행', '제한 시간 15분', '', '', 'timer15'], // 15
+  ['2부 · 물약병 볼링', '', '', '', 'scores-large'], // 16
+  ['2부 · 최종 우승', '영예의 1위 기숙사', '2026 HRA 기숙사 컵 우승을 축하합니다!', 'wine', 'champion'], // 17
+  ['휴식', 'Break Time', '10분 뒤 3부 명예의 전당에서 만나요.', 'hero', 'timer10'], // 18
+  ['3부 · 시상식', '명예의 전당', '새로운 문이 열리고 영예로운 순간이 시작됩니다.', 'wine', 'awards-gate'], // 19
+  ['부문별 시상', '영광의 수상자', '부엉이가 전해온 명예의 양피지', 'paper', 'ballroom'], // 20
+  ['귀빈 말씀', '감사와 격려의 말씀', '교수님 격려 말씀 · 위원장 마무리 인사', '', '✧'], // 21
+  ['기념 촬영', 'Happy 2026 HRA Year-End Party', 'Happy Christmas, HRA', 'hero photo-star'], // 22
+  ['폐회', '다음 목적지를 향해서', '오늘 밤의 여정에 함께해 주셔서 감사합니다.', 'hero'], // 23
 ];
 
 const houses = [
-  { name: '그리핀도르', color: '#bc626b' },
-  { name: '슬리데린', color: '#62a88f' },
-  { name: '래번클로', color: '#739dd5' },
-  { name: '후플푸프', color: '#e0b85b' },
+  { name: '그리핀도르', color: '#bc626b', crest: '🦁', desc: '용기와 결단' },
+  { name: '슬리데린', color: '#62a88f', crest: '🐍', desc: '야망과 지혜' },
+  { name: '래번클로', color: '#739dd5', crest: '🦅', desc: '지성과 창의' },
+  { name: '후플푸프', color: '#e0b85b', crest: '🦡', desc: '성실과 헌신' },
 ];
 const get = id => document.getElementById(id);
-const storeKey = 'hra-live-slides-v1';
+const storeKey = 'hra-live-slides-v2';
+const defaultGuests = [
+  { name: '정하늘', role: '지도 교수 · 언론홍보학부', photo: './portraits/candidate-2.webp' },
+  { name: '허영준', role: '지도 교수 · 경영학부', photo: './portraits/candidate-1.webp' },
+  { name: '김도아', role: 'HRA 멘토 위원', photo: './portraits/candidate-3.webp' },
+  { name: '송채은', role: 'HRA 총동문회 선배', photo: './portraits/candidate-4.webp' },
+  { name: '박지성', role: 'HRA 20기 대표', photo: './portraits/candidate-1.webp' },
+  { name: '김강민', role: 'HRA 20기 부대표', photo: './portraits/candidate-4.webp' }
+];
 const initialState = {
-  scores: [0, 0, 0, 0],
-  guests: [{ name: '윤지후', role: '지도 교수 · 시연' }, { name: '박서연', role: '선배 · 시연' }],
+  scores: [120, 95, 140, 110],
+  guests: defaultGuests,
 };
 let state = readState();
+if (!state.guests || !state.guests.some(g => g.name === '정하늘')) {
+  state.guests = defaultGuests;
+}
 let index = 0;
 let countdown;
 let memory = 1;
@@ -51,12 +60,12 @@ let staged = false;
 let revealed = false;
 let captionJob;
 let lastRendered = -1;
-const revealLabels = new Map([[1, '봉인 열기'], [9, '정답 공개'], [12, '현재 사진 공개'], [18, '순위 공개'], [21, '시상 공개']]);
-const cueLabels = new Map([[3, '다음 학생증'], [11, '15초 시작'], [14, '영상 재생'], [16, '빙고 시작'], [19, '휴식 시작']]);
+const revealLabels = new Map([[1, '양피지 펼치기'], [7, '정답 공개'], [11, '현재 사진 공개'], [17, '1위 기숙사 공개'], [20, '양피지 공개']]);
+const cueLabels = new Map([[2, '다음 교수님'], [10, '15초 시작'], [13, '영상 재생'], [15, '15분 시작'], [18, '10분 시작']]);
 const origin = location.protocol === 'file:' ? '*' : location.origin;
-const candidates = ['이도윤', '김하늘', '최서현', '윤지후'];
-const correctCandidate = 1;
-const answerPages = new Set([9, 12]);
+const candidates = ['정하늘', '허영준', '김도아', '송채은'];
+const correctCandidate = 0;
+const answerPages = new Set([7, 11]);
 let chosenCandidate = null;
 let answerLocked = false;
 
@@ -157,7 +166,7 @@ function media(parent, video, label) {
   const wrapper = node('div', '', 'media');
   const asset = node(video ? 'video' : 'img');
   const key = index + ':' + (video ? 'video' : memory);
-  const sample = index === 11 ? './portraits/child.webp' : index === 12 ? './portraits/adult.webp' : undefined;
+  const sample = index === 10 ? './portraits/child.webp' : index === 11 ? './portraits/adult.webp' : undefined;
   const saved = mediaFiles.get(key) ?? sample;
   asset.hidden = !saved;
   if (saved) asset.src = saved;
@@ -168,7 +177,7 @@ function media(parent, video, label) {
     asset.alt = label;
     asset.className = 'photo-demo';
   }
-  const younger = index === 12 ? mediaFiles.get('11:' + memory) ?? './portraits/child.webp' : undefined;
+  const younger = index === 11 ? mediaFiles.get('10:' + memory) ?? './portraits/child.webp' : undefined;
   if (younger) {
     const previous = node('img', '', 'photo-demo photo-before');
     previous.src = younger;
@@ -238,58 +247,216 @@ function renderAnswer(body) {
   body.append(result);
 }
 
+function createOwlSvg() {
+  const container = node('div', '', 'owl-character');
+  container.innerHTML = `
+    <svg class="owl-svg" viewBox="0 0 180 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="owlEyeGrad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#ffe270"/>
+          <stop offset="65%" stop-color="#e59b12"/>
+          <stop offset="100%" stop-color="#5a3103"/>
+        </radialGradient>
+        <linearGradient id="owlFeather" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fdfbf7"/>
+          <stop offset="40%" stop-color="#dfcfb7"/>
+          <stop offset="100%" stop-color="#937a5c"/>
+        </linearGradient>
+        <linearGradient id="owlWingGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#eae0cf"/>
+          <stop offset="60%" stop-color="#b69b7c"/>
+          <stop offset="100%" stop-color="#5d442c"/>
+        </linearGradient>
+      </defs>
+      <g class="owl-wing-left">
+        <path d="M70,48 C50,25 20,18 2,30 C-2,38 8,55 22,65 C38,76 56,80 72,55 Z" fill="url(#owlWingGrad)" stroke="#4d3521" stroke-width="1.5"/>
+        <path d="M12,34 C25,48 45,58 65,52" stroke="#48321e" stroke-width="1.2" fill="none"/>
+        <path d="M22,46 C35,58 52,65 68,54" stroke="#48321e" stroke-width="1.2" fill="none"/>
+        <path d="M5,32 C-1,42 6,52 16,58" stroke="#3d2716" stroke-width="1.2" fill="none"/>
+      </g>
+      <g class="owl-wing-right">
+        <path d="M110,48 C130,25 160,18 178,30 C182,38 172,55 158,65 C142,76 124,80 108,55 Z" fill="url(#owlWingGrad)" stroke="#4d3521" stroke-width="1.5"/>
+        <path d="M168,34 C155,48 135,58 115,52" stroke="#48321e" stroke-width="1.2" fill="none"/>
+        <path d="M158,46 C145,58 128,65 112,54" stroke="#48321e" stroke-width="1.2" fill="none"/>
+        <path d="M175,32 C181,42 174,52 164,58" stroke="#3d2716" stroke-width="1.2" fill="none"/>
+      </g>
+      <g>
+        <ellipse cx="80" cy="98" rx="5" ry="3" fill="#cf9d34"/>
+        <ellipse cx="100" cy="98" rx="5" ry="3" fill="#cf9d34"/>
+        <path d="M75,98 L85,98 M95,98 L105,98" stroke="#4a300a" stroke-width="2"/>
+      </g>
+      <path d="M72,40 C65,55 64,80 75,98 C82,104 98,104 105,98 C116,80 115,55 108,40 Z" fill="url(#owlFeather)" stroke="#523c28" stroke-width="1.5"/>
+      <path d="M82,65 Q90,70 98,65 M80,75 Q90,81 100,75 M84,85 Q90,90 96,85" stroke="#7a5f45" stroke-width="1.3" fill="none"/>
+      <path d="M70,38 L65,18 C72,25 78,28 82,30 C86,29 94,29 98,30 C102,28 108,25 115,18 L110,38 C116,48 64,48 70,38 Z" fill="#dfcfb7" stroke="#523c28" stroke-width="1.5"/>
+      <circle cx="81" cy="36" r="10" fill="#f8f4ec" stroke="#b4997e" stroke-width="1"/>
+      <circle cx="99" cy="36" r="10" fill="#f8f4ec" stroke="#b4997e" stroke-width="1"/>
+      <circle cx="81" cy="36" r="6.5" fill="url(#owlEyeGrad)"/>
+      <circle cx="99" cy="36" r="6.5" fill="url(#owlEyeGrad)"/>
+      <circle cx="81" cy="36" r="3.2" fill="#0d0905"/>
+      <circle cx="99" cy="36" r="3.2" fill="#0d0905"/>
+      <circle cx="79.5" cy="34.5" r="1.3" fill="#ffffff"/>
+      <circle cx="97.5" cy="34.5" r="1.3" fill="#ffffff"/>
+      <polygon points="90,36 86,47 94,47" fill="#f5af19" stroke="#754b08" stroke-width="1"/>
+    </svg>
+  `;
+  return container;
+}
+
 const sceneBodies = {
+  'owl-parchment': body => {
+    const scene = node('div', '', 'owl-scene');
+    const owl = createOwlSvg();
+    
+    const unrollSystem = node('div', '', 'parchment-unroll-system');
+    
+    const topRoller = node('div', '', 'parchment-roller');
+    topRoller.append(node('div', '', 'roller-knob'), node('div', '', 'roller-knob'));
+    
+    const windowDiv = node('div', '', 'parchment-scroll-window');
+    const sheet = node('div', '', 'parchment-sheet-content');
+    sheet.append(
+      node('div', '✦ HRA 2026 ACADEMY ✦', 'parchment-crest'),
+      node('h2', '신입생 여러분 입학을 축하합니다', 'parchment-korean'),
+      node('p', 'Welcome to HRA-Warts', 'parchment-english'),
+      node('div', 'HRA 마법학교 겨울 연회 · 입학 통지서', 'parchment-seal')
+    );
+    windowDiv.append(sheet);
+    
+    const bottomRoller = node('div', '', 'parchment-roller');
+    bottomRoller.append(node('div', '', 'roller-knob'), node('div', '', 'roller-knob'));
+    
+    unrollSystem.append(topRoller, windowDiv, bottomRoller);
+    scene.append(owl, unrollSystem);
+    body.append(scene);
+  },
   guests: body => {
+    const exitOwl = node('div', '', 'owl-fly-exit');
+    exitOwl.append(createOwlSvg());
+    body.append(exitOwl);
+
     const visible = state.guests.filter(guest => !guest.hidden);
     if (!visible.length) return body.append(node('p', '표시할 내빈이 없습니다.'));
     let selected = 0;
-    const card = node('div');
+    
+    const cardContainer = node('div', '', 'guest-card-container');
     const renderCard = () => {
-      card.replaceChildren();
-      tiles(card, [[visible[selected].name, visible[selected].role]]);
+      cardContainer.replaceChildren();
+      const guest = visible[selected];
+      
+      const card = node('div', '', 'faculty-id-card-giant');
+      card.append(node('div', 'HONORARY FACULTY', 'guest-id-badge'));
+      
+      const photoFrame = node('div', '', 'faculty-photo-frame');
+      const photoImg = node('img');
+      photoImg.src = guest.photo || './portraits/candidate-2.webp';
+      photoImg.alt = guest.name;
+      photoFrame.append(photoImg);
+      
+      const infoBox = node('div', '', 'faculty-info-box');
+      infoBox.append(
+        node('div', 'HRA 마법학교 명예 교수증', 'faculty-tag'),
+        node('h2', `${guest.name} 교수님`, 'faculty-giant-name'),
+        node('div', guest.role, 'faculty-dept'),
+        node('div', 'HRA 지도교수 · 2026 연회에 함께해 주심을 감사드립니다.', 'faculty-role-desc'),
+        node('div', 'FACULTY MEMBER OF HRA', 'faculty-seal-stamp')
+      );
+      
+      card.append(photoFrame, infoBox);
+      cardContainer.append(card);
     };
-    body.append(card);
+    
+    body.append(cardContainer);
+    
     if (visible.length > 1) {
-      const next = button('다음 학생증', () => {
+      const controls = node('div', '', 'guest-nav-controls');
+      const counter = node('span', `1 / ${visible.length}`);
+      const prev = button('◀ 이전 내빈', () => {
+        selected = (selected - 1 + visible.length) % visible.length;
+        renderCard();
+        counter.textContent = `${selected + 1} / ${visible.length}`;
+      });
+      const next = button('다음 내빈 ▶', () => {
         selected = (selected + 1) % visible.length;
         renderCard();
+        counter.textContent = `${selected + 1} / ${visible.length}`;
       });
       next.dataset.cue = 'true';
-      body.append(next);
+      controls.append(prev, counter, next);
+      body.append(controls);
     }
     renderCard();
   },
-  staff: body => body.append(button('운영 패널 열기', openOperator)),
-  houses: body => tiles(body, houses.map((house, i) => [house.name, (i + 1) + '조', house.color]), 'score'),
-  students: body => tiles(body, [['김하늘', '20기 · 그리핀도르'], ['이도윤', '20기 · 슬리데린'], ['최서현', '20기 · 래번클로']], 'students'),
-  film: body => tiles(body, [['수업', '01'], ['토론', '02'], ['현장 활동', '03']]),
+  banners: body => {
+    const grid = node('div', '', 'house-banners-grid');
+    houses.forEach(house => {
+      const banner = node('div', '', 'house-banner');
+      banner.style.setProperty('--banner-accent', house.color);
+      banner.append(
+        node('div', house.crest, 'banner-crest'),
+        node('div', house.name, 'banner-name'),
+        node('div', house.desc, 'banner-sub')
+      );
+      grid.append(banner);
+    });
+    body.append(grid);
+  },
+  blackout: () => {},
+  'quiz-intro': body => {
+    const reel = node('div', '', 'quiz-film-reel');
+    const track = node('div', '', 'film-track');
+    const moments = ['전반기 워크숍', '기업실무 발표', '팀 프로젝트', '열띤 토론', '스터디 세션', '네트워킹 데이', '멘토링 세션', '20기의 추억'];
+    for (let loop = 0; loop < 2; loop++) {
+      moments.forEach(m => {
+        const frame = node('div', m, 'film-frame');
+        track.append(frame);
+      });
+    }
+    reel.append(track);
+    body.append(reel);
+    body.append(node('p', '20기의 소중한 기억이 필름처럼 흐르며 퀴즈가 시작됩니다!', 'note'));
+  },
   quiz: renderQuestion,
   answer: renderAnswer,
-  cards: body => {
-    const selected = node('p', '카드 ' + memory + '번', 'note');
-    choices(body, ['I', 'II', 'III', 'IV'], i => {
-      memory = i + 1;
-      selected.textContent = '카드 ' + memory + '번 선택';
-    });
-    body.append(selected);
+  interlude: () => {},
+  'photo-intro': body => {
+    body.append(node('div', '⏳', 'ornament'));
+    body.append(node('p', '타임캡슐이 서서히 열리며 교수님의 어린 시절 추억이 떠오릅니다.', 'note'));
   },
   photo: body => {
     media(body, false, '카드 ' + memory + '번 사진 선택');
-    if (index === 11) timer(body, 15);
+    if (index === 10) timer(body, 15);
     else {
-      const hasEventPhoto = mediaFiles.has('11:' + memory) || mediaFiles.has('12:' + memory);
-      const name = photoAnswerNames.get(String(memory)) || (hasEventPhoto ? '현재 모습' : '윤지후 교수님 · 시연');
+      const hasEventPhoto = mediaFiles.has('10:' + memory) || mediaFiles.has('11:' + memory);
+      const name = photoAnswerNames.get(String(memory)) || (hasEventPhoto ? '현재 모습' : '정하늘 교수님 · 시연');
       body.append(node('p', name, 'photo-answer-name'));
     }
   },
   video: body => media(body, true, '20기 활동 영상 선택'),
-  bingo: body => tiles(body, ['다른 기수', '같은 고향', '같은 취미', '책 추천', '첫 참석', '같은 생일 월', '다른 기숙사', '새로 만난 선배', '공통 관심사'].map(item => [item]), 'bingo'),
-  timer: body => timer(body, 600),
-  bowling: body => tiles(body, [['100점', '가장 먼 구간'], ['50점', '중간 구간'], ['10점', '가까운 구간']]),
-  scores: body => {
+  bingo: body => {
+    const grid = node('div', '', 'bingo-grid');
+    const items = [
+      '흰 양말을 신은 사람',
+      '한라산을 간 사람',
+      '커피를 좋아하는 사람',
+      '한국 문학을 선호하는 사람',
+      '기업실무 2회 이상 발표자',
+      '안경을 쓴 사람',
+      '다른 기숙사인 사람',
+      '피자를 좋아하는 사람',
+      '운동이 취미인 사람'
+    ];
+    items.forEach(text => {
+      const tile = node('button', text, 'tile');
+      tile.addEventListener('click', () => tile.classList.toggle('marked'));
+      grid.append(tile);
+    });
+    body.append(grid);
+  },
+  timer15: body => timer(body, 900),
+  timer10: body => timer(body, 600),
+  'scores-large': body => {
     const max = Math.max(...state.scores);
-    const winners = houses.filter((_, i) => state.scores[i] === max);
-    const board = node('div', '', 'score-board');
+    const board = node('div', '', 'score-board-giant');
     houses.forEach((house, i) => {
       const row = node('div', '', 'score-row');
       const track = node('div', '', 'score-track');
@@ -298,15 +465,62 @@ const sceneBodies = {
       bar.style.width = (max ? score / max * 100 : 0) + '%';
       bar.style.background = house.color;
       track.append(bar);
-      row.append(node('strong', house.name), track, node('span', score + '점'));
+      row.append(node('strong', house.crest + ' ' + house.name), track, node('span', score + '점'));
       board.append(row);
     });
     body.append(board);
-    const summary = max === 0 ? '점수 입력 대기 중' : (winners.length > 1 ? '공동 1위 · ' : '1위 · ') + winners.map(house => house.name).join(' · ');
-    body.append(node('p', summary, 'note'));
   },
-  awards: body => tiles(body, [['교수님 감사장', '감사와 존경을 담아'], ['전반기 개근상', '꾸준한 참여'], ['최다 발표상', '활발한 발표']]),
-  rows: body => tiles(body, [['1열', '교수님 · 내빈'], ['2열', '1~19기 선배님'], ['3열', 'HRA 20기']]),
+  champion: body => {
+    const max = Math.max(...state.scores);
+    const winnerIdx = state.scores.indexOf(max);
+    const winner = houses[winnerIdx] || houses[0];
+    const spot = node('div', '', 'champion-spotlight');
+    spot.append(
+      node('div', '👑', 'champion-crown'),
+      node('div', `${winner.crest} ${winner.name}`, 'champion-house-name'),
+      node('div', `최종 점수 ${max}점 · 2026 기숙사 컵 우승`, 'champion-trophy-banner')
+    );
+    body.append(spot);
+  },
+  'awards-gate': body => {
+    body.append(node('div', '🏰', 'ornament'));
+    body.append(node('p', '웅장한 연회장의 문이 활짝 열리며 명예의 전당 시상식이 시작됩니다.', 'note'));
+  },
+  ballroom: body => {
+    const container = node('div', '', 'scrolls-container');
+    const awards = [
+      { title: '교수님 감사장', winner: '정하늘 교수님', desc: '아낌없는 사랑과 헌신으로 20기를 이끌어주신 언론홍보학부 지도교수님께 감사와 존경을 바칩니다.' },
+      { title: '전반기 개근상', winner: '박지성 마법사', desc: '한 번의 결석 없이 언제나 성실하게 자리를 지킨 열정의 마법사에게 수여합니다.' },
+      { title: '최다 발표상', winner: '김강민 마법사', desc: '깊이 있는 분석과 당당한 발표로 학문적 지평을 넓힌 마법사에게 수여합니다.' }
+    ];
+    awards.forEach(award => {
+      const scroll = node('div', '', 'parchment-scroll');
+      scroll.append(
+        node('div', award.title, 'scroll-header'),
+        node('div', award.winner, 'scroll-winner'),
+        node('p', award.desc, 'scroll-desc'),
+        node('div', '✦ HRA 2026 ✦', 'scroll-badge')
+      );
+      container.append(scroll);
+    });
+    body.append(container);
+  },
+  'photo-star': body => {
+    const container = node('div', '', 'starfall-container');
+    for (let i = 0; i < 40; i++) {
+      const star = node('div', '', 'star-particle');
+      star.style.left = (Math.random() * 100) + '%';
+      star.style.top = (Math.random() * -20) + 'px';
+      const size = Math.random() * 6 + 3;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      container.append(star);
+    }
+    body.append(container);
+  },
+  staff: body => body.append(button('운영 패널 열기', openOperator)),
 };
 
 function render() {
@@ -316,7 +530,7 @@ function render() {
   slide.className = 'slide ' + theme + (theme === 'hero' || index === 0 ? '' : ' center');
   slide.dataset.content = content ?? '';
   slide.dataset.page = page;
-  slide.style.setProperty('--scene-image', 'url("./scenes/p' + page + '.webp")');
+  slide.style.setProperty('--scene-image', index === 1 ? 'url("./castle.webp")' : 'url("./scenes/p' + page + '.webp")');
   const frame = node('div', '', 'scene-frame');
   frame.setAttribute('aria-hidden', 'true');
   for (let corner = 0; corner < 4; corner++) frame.append(node('span', '❦'));
@@ -342,6 +556,8 @@ function render() {
   updateReveal();
   notifyPresenter();
   get('number').textContent = page;
+  const totalSpan = document.querySelector('.position span');
+  if (totalSpan) totalSpan.textContent = ' / ' + slides.length;
   get('progress').style.width = ((index + 1) * 100 / slides.length) + '%';
   get('prev').disabled = index === 0;
   get('next').disabled = index === slides.length - 1;
