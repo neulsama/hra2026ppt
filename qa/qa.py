@@ -84,7 +84,8 @@ class Session:
         pg = self.page
         pg.goto(INDEX + ('?present' if mode == 'present' else '') + '#p%d' % slide)
         pg.reload()                                   # 해시만 바뀐 이동과 달리 상태를 완전히 초기화
-        pg.wait_for_function("document.querySelector('#slide h1,#slide .opening-titles')")
+        # 제목(h1)이 없는 장(2페이지 부엉이 컷)도 있으니 장면 본문이 그려졌는지도 본다
+        pg.wait_for_function("document.querySelector('#slide h1,#slide .opening-titles,#slide .scene-body')")
         if mode == 'present' and not pg.evaluate("!!window.HraPresent"):
             if (ROOT / 'present.js').exists():       # 파일이 있는데 동작하지 않으면 대체 CSS로 덮지 말고 실패로 기록
                 self.errors.append('present.js 가 있는데 window.HraPresent 가 만들어지지 않음 (스크립트 오류)')
@@ -98,6 +99,8 @@ class Session:
         pg = self.page
         if pg.evaluate("!!document.querySelector('.opening-canvas')"):
             pg.evaluate("t => window.HraOpening.freeze(t)", 14.0 if t is None else float(t))
+        # 캔버스 연출(예: 23페이지 반짝이)도 같은 시각으로 고정한다. t=None 이면 연출이 정한 머무름 시각
+        pg.evaluate("t => { for (const e of Object.values(window.HRA_EFFECTS || {})) e.freeze?.(t); }", None if t is None else float(t))
         pg.evaluate("""t => { for (const a of document.getAnimations()) { try {
             if (t === null) a.finish(); else { a.pause(); a.currentTime = t * 1000; } } catch (e) {} } }""", t)
         pg.wait_for_timeout(450 if pg.evaluate("!!document.querySelector('.opening-canvas')") else 120)

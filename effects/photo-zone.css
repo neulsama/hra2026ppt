@@ -1,0 +1,46 @@
+/* P23 포토존: 표지의 성과 검은 호수 + 금빛 반짝이 + 금색 "2026 HRA YEAR-END PARTY"
+   콘티: 작업지침/콘티/P23_포토존.md
+   stage.css 의 [data-page="23"] 규칙보다 우선하도록 .slide.photo-zone[data-page="23"] 로 쓴다. */
+
+/* 배경: 표지 그림(배 세 척 포함 합본). 위쪽 띠를 남색으로 눌러 글씨와 반짝이가 하늘에서 떠 보이게 */
+.slide.photo-zone[data-page="23"]{
+  background-image:linear-gradient(180deg,#050913bf 0%,#0509136b 20%,#05091300 42%),url("../assets/cuts/P23/castle-lake.webp");
+  background-size:cover;
+  background-position:center;
+}
+
+/* 화면 글씨는 "2026 HRA YEAR-END PARTY" 하나만 (식순용 "기념 촬영", 인장, 쪽 번호는 숨김) */
+.slide.photo-zone[data-page="23"] :is(.eyebrow,.description,.ornament,.mark,.corner){display:none}
+
+/* 반짝이 캔버스: 뒤(먼·중간·쏟아짐)는 글씨 뒤, 앞(가까운 것)은 글씨 앞 */
+.photo-zone-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.photo-zone-canvas.is-front{z-index:2}
+
+/* 금색 글씨: 표지 제목과 같은 60pt(1920×1080에서 80px = 4.17cqw), 위쪽 가운데 한 줄 */
+.slide.photo-zone[data-page="23"] h1{
+  position:absolute;
+  top:5.5%;
+  left:0;
+  right:0;
+  z-index:1;
+  width:max-content;
+  max-width:none;
+  margin:0 auto;
+  padding-left:.08em;                       /* 마지막 글자 뒤 자간만큼 왼쪽도 띄워 정확히 가운데 */
+  font:700 4.17cqw/1.1 var(--serif);
+  letter-spacing:.08em;
+  white-space:nowrap;
+  text-align:center;
+  color:#f2cf85;                            /* background-clip:text 를 못 쓰는 브라우저의 단색 금색 */
+  text-shadow:none;                         /* text-shadow 는 그라데이션 글자 위를 덮으므로 drop-shadow 로 */
+  filter:drop-shadow(0 .05em .06em #000000d9) drop-shadow(0 0 .35em #ffcf7a59);
+}
+@supports ((background-clip:text) or (-webkit-background-clip:text)){
+  .slide.photo-zone[data-page="23"] h1{
+    background:linear-gradient(180deg,#fff7dc 0%,#f6d98f 30%,#c8963e 48%,#f3d488 62%,#a9772c 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-stroke:.012em #6b4716;
+  }
+}

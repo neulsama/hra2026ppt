@@ -42,6 +42,107 @@
       "id": "P01-no-leftover-chrome",
       "desc": "발표 모드에서는 상단·하단 바가 없어 무대만 보임",
       "slide": 1, "type": "js", "expr": "getComputedStyle(document.querySelector('.top')).display === 'none' && getComputedStyle(document.querySelector('.controls')).display === 'none'"
+    },
+    {
+      "id": "P23-title-text",
+      "desc": "23페이지 무대 글씨 문구",
+      "slide": 23,
+      "type": "text",
+      "selector": "#slide.photo-zone h1",
+      "equals": "2026 HRA YEAR-END PARTY"
+    },
+    {
+      "id": "P23-title-60pt",
+      "desc": "23페이지 글씨 60pt (1920×1080에서 80px)",
+      "slide": 23,
+      "viewport": [1920, 1080],
+      "type": "fontPx",
+      "selector": "#slide.photo-zone h1",
+      "px": 80,
+      "tol": 1.0
+    },
+    {
+      "id": "P23-title-one-line-top",
+      "desc": "23페이지 글씨가 한 줄이고 화면 위쪽 20% 안, 가로 가운데(±1%)",
+      "slide": 23,
+      "viewport": [1920, 1080],
+      "type": "js",
+      "expr": "(() => { const st = document.getElementById('stage').getBoundingClientRect(); const h = document.querySelector('#slide.photo-zone h1'); const r = h.getBoundingClientRect(); const lh = parseFloat(getComputedStyle(h).fontSize) * 1.5; const cx = ((r.left + r.right) / 2 - st.left) / st.width; return r.height < lh && (r.bottom - st.top) / st.height < 0.2 && Math.abs(cx - 0.5) < 0.01 && r.right <= st.right && r.left >= st.left; })()"
+    },
+    {
+      "id": "P23-title-gold",
+      "desc": "23페이지 글씨가 금색 그라데이션(background-clip:text)",
+      "slide": 23,
+      "type": "js",
+      "expr": "(() => { const cs = getComputedStyle(document.querySelector('#slide.photo-zone h1')); return (cs.backgroundClip === 'text' || cs.webkitBackgroundClip === 'text') && cs.backgroundImage.includes('gradient'); })()"
+    },
+    {
+      "id": "P23-only-text",
+      "desc": "23페이지 무대에 보이는 글씨는 h1 하나뿐 (금테 장식 제외)",
+      "slide": 23,
+      "type": "js",
+      "expr": "(() => { const out = []; for (const el of document.querySelectorAll('#slide *, #caption')) { if (el.closest('[aria-hidden=true]') || el.matches('h1') || el.closest('h1')) continue; const cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0 || el.closest('[hidden]')) continue; const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(''); if (own) out.push(own); } return out.length === 0 ? true : out.join('|'); })()"
+    },
+    {
+      "id": "P23-background",
+      "desc": "23페이지 배경이 표지의 성과 검은 호수(배 포함 합본)",
+      "slide": 23,
+      "type": "js",
+      "expr": "getComputedStyle(document.getElementById('slide'), '::before').backgroundImage.includes('cuts/P23/castle-lake.webp')"
+    },
+    {
+      "id": "P23-canvas",
+      "desc": "23페이지 반짝이 캔버스(글씨 뒤·앞 두 장)",
+      "slide": 23,
+      "type": "js",
+      "expr": "document.querySelectorAll('#slide > canvas.photo-zone-canvas').length === 2"
+    },
+    {
+      "id": "P23-particle-cap",
+      "desc": "23페이지 반짝이 수 상한(쏟아질 때 430개 이하, 머무를 때 200개 이하·150개 이상)",
+      "slide": 23,
+      "type": "js",
+      "expr": "(() => { const z = window.HRA_EFFECTS['photo-zone']; return z.count(1.0) <= 430 && z.count(8.0) <= 200 && z.count(8.0) >= 150; })()"
+    },
+    {
+      "id": "P23-no-pending",
+      "desc": "23페이지는 남은 연출이 없어 다음을 누르면 바로 24페이지, 그때 그리기가 멈춤",
+      "slide": 23,
+      "type": "js",
+      "expr": "(async () => { const z = window.HRA_EFFECTS['photo-zone']; z.unfreeze(); const p0 = z.pending(); const run0 = z.running; document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', code: 'ArrowRight', bubbles: true })); await new Promise(r => setTimeout(r, 400)); return !p0 && run0 && location.hash === '#p24' && !z.running && !document.querySelector('canvas.photo-zone-canvas'); })()"
+    },
+    {
+      "id": "P23-pour-motion",
+      "desc": "23페이지 들어온 직후 위쪽 절반에서 반짝이가 쏟아짐(0.2~1.8초)",
+      "slide": 23,
+      "type": "motion",
+      "t0": 0.2,
+      "dur": 1.6,
+      "fps": 5,
+      "size": [1280, 720],
+      "region": [0.04, 0.02, 0.96, 0.5],
+      "minMeanDiff": 2.0,
+      "maxMeanDiff": 60
+    },
+    {
+      "id": "P23-steady-motion",
+      "desc": "23페이지 머무는 동안에도 반짝이가 계속 내림(8~11초), 쏟아질 때보다는 작게",
+      "slide": 23,
+      "type": "motion",
+      "t0": 8,
+      "dur": 3,
+      "fps": 4,
+      "size": [1280, 720],
+      "region": [0.04, 0.02, 0.96, 0.5],
+      "minMeanDiff": 0.3,
+      "maxMeanDiff": 2.0
+    },
+    {
+      "id": "P23-reduced-motion",
+      "desc": "23페이지 움직임 줄이기 모드에서 반짝이를 한 장면으로 그리고 멈춤",
+      "slide": 23,
+      "type": "js",
+      "expr": "(() => { const z = window.HRA_EFFECTS['photo-zone']; return typeof z.freeze === 'function' && typeof z.unfreeze === 'function' && z.reducedFrame === 8; })()"
     }
   ]
 }

@@ -21,7 +21,7 @@ const slides = [
   ['3부 · 시상식', '명예의 전당', '새로운 문이 열리고 영예로운 순간이 시작됩니다.', 'wine', 'awards-gate'], // 19
   ['부문별 시상', '영광의 수상자', '부엉이가 전해온 명예의 양피지', 'paper', 'ballroom'], // 20
   ['귀빈 말씀', '감사와 격려의 말씀', '교수님 격려 말씀 · 위원장 마무리 인사', '', '✧'], // 21
-  ['기념 촬영', 'Happy 2026 HRA Year-End Party', 'Happy Christmas, HRA', 'hero photo-star'], // 22
+  ['기념 촬영', '2026 HRA YEAR-END PARTY', '', 'photo-zone'], // 22: 23페이지 포토존 (성과 검은 호수 + 금빛 반짝이). 연출은 effects/photo-zone.js
   ['폐회', '다음 목적지를 향해서', '오늘 밤의 여정에 함께해 주셔서 감사합니다.', 'hero'], // 23
 ];
 
@@ -68,6 +68,7 @@ const owlApi = from => ({
   from,
 });
 const owlEffect = () => window.HRA_EFFECTS?.['owl-letter'];
+let photoZoneCleanup;
 const revealLabels = new Map([[7, '정답 공개'], [11, '현재 사진 공개'], [17, '1위 기숙사 공개'], [20, '양피지 공개']]);
 const cueLabels = new Map([[2, '다음 교수님'], [10, '15초 시작'], [13, '영상 재생'], [15, '15분 시작'], [18, '10분 시작']]);
 const origin = location.protocol === 'file:' ? '*' : location.origin;
@@ -513,6 +514,8 @@ function render() {
   const previous = lastRendered;
   owlCleanup?.();
   owlCleanup = undefined;
+  photoZoneCleanup?.();
+  photoZoneCleanup = undefined;
   const [chapter, title, description, theme, content] = slides[index];
   const page = String(index + 1).padStart(2, '0');
   slide.className = 'slide ' + theme + (theme === 'hero' || index === 0 ? '' : ' center');
@@ -546,6 +549,11 @@ function render() {
   if (index === 1) {
     const cleanup = owlEffect()?.enter(slide, owlApi(previous === 0 ? 'cover' : null));
     if (typeof cleanup === 'function') owlCleanup = cleanup;
+  }
+  if (index === 22) {
+    // 23페이지 포토존: 들어오면 금빛 반짝이가 저절로 쏟아지고 계속 내린다. 남은 연출이 없어 다음은 바로 24페이지
+    const cleanup = window.HRA_EFFECTS?.['photo-zone']?.enter(slide, { reduced: matchMedia('(prefers-reduced-motion: reduce)').matches });
+    if (typeof cleanup === 'function') photoZoneCleanup = cleanup;
   }
   notifyPresenter();
   get('number').textContent = page;
