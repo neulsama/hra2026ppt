@@ -60,7 +60,15 @@ let staged = false;
 let revealed = false;
 let captionJob;
 let lastRendered = -1;
-const revealLabels = new Map([[1, '양피지 펼치기'], [7, '정답 공개'], [11, '현재 사진 공개'], [17, '1위 기숙사 공개'], [20, '양피지 공개']]);
+let owlCleanup;
+// 2페이지 부엉이 연출(effects/owl-letter.js)에 넘기는 값
+const owlApi = from => ({
+  next: () => { location.hash = 'p3'; },
+  get reduced() { return matchMedia('(prefers-reduced-motion: reduce)').matches; },
+  from,
+});
+const owlEffect = () => window.HRA_EFFECTS?.['owl-letter'];
+const revealLabels = new Map([[7, '정답 공개'], [11, '현재 사진 공개'], [17, '1위 기숙사 공개'], [20, '양피지 공개']]);
 const cueLabels = new Map([[2, '다음 교수님'], [10, '15초 시작'], [13, '영상 재생'], [15, '15분 시작'], [18, '10분 시작']]);
 const origin = location.protocol === 'file:' ? '*' : location.origin;
 const candidates = ['정하늘', '허영준', '김도아', '송채은'];
@@ -303,36 +311,13 @@ function createOwlSvg() {
 }
 
 const sceneBodies = {
+  // 2페이지: 실사 부엉이가 양피지를 가져와 펼친다. 연출은 effects/owl-letter.js (hrappt2026의 C02 컷)
   'owl-parchment': body => {
-    const scene = node('div', '', 'owl-scene');
-    const owl = createOwlSvg();
-    
-    const unrollSystem = node('div', '', 'parchment-unroll-system');
-    
-    const topRoller = node('div', '', 'parchment-roller');
-    topRoller.append(node('div', '', 'roller-knob'), node('div', '', 'roller-knob'));
-    
-    const windowDiv = node('div', '', 'parchment-scroll-window');
-    const sheet = node('div', '', 'parchment-sheet-content');
-    sheet.append(
-      node('div', '✦ HRA 2026 ACADEMY ✦', 'parchment-crest'),
-      node('h2', '신입생 여러분 입학을 축하합니다', 'parchment-korean'),
-      node('p', 'Welcome to HRA-Warts', 'parchment-english'),
-      node('div', 'HRA 마법학교 겨울 연회 · 입학 통지서', 'parchment-seal')
-    );
-    windowDiv.append(sheet);
-    
-    const bottomRoller = node('div', '', 'parchment-roller');
-    bottomRoller.append(node('div', '', 'roller-knob'), node('div', '', 'roller-knob'));
-    
-    unrollSystem.append(topRoller, windowDiv, bottomRoller);
-    scene.append(owl, unrollSystem);
-    body.append(scene);
+    const scroll = node('div', '', 'welcome-scroll');
+    scroll.append(node('strong', '신입생 여러분\n입학을 축하합니다', 'welcome-ko'), node('span', 'Welcome to\nHRA-Warts', 'welcome-en'));
+    body.append(scroll);
   },
   guests: body => {
-    const exitOwl = node('div', '', 'owl-fly-exit');
-    exitOwl.append(createOwlSvg());
-    body.append(exitOwl);
 
     const visible = state.guests.filter(guest => !guest.hidden);
     if (!visible.length) return body.append(node('p', '표시할 내빈이 없습니다.'));
@@ -525,12 +510,16 @@ const sceneBodies = {
 
 function render() {
   stopTimer();
+  const previous = lastRendered;
+  owlCleanup?.();
+  owlCleanup = undefined;
   const [chapter, title, description, theme, content] = slides[index];
   const page = String(index + 1).padStart(2, '0');
   slide.className = 'slide ' + theme + (theme === 'hero' || index === 0 ? '' : ' center');
   slide.dataset.content = content ?? '';
   slide.dataset.page = page;
-  slide.style.setProperty('--scene-image', index === 1 ? 'url("./castle.webp")' : 'url("./scenes/p' + page + '.webp")');
+  slide.dataset.id = index === 1 ? 'welcome' : '';
+  slide.style.setProperty('--scene-image', index === 1 ? 'url("./scenes/p24.webp")' : 'url("./scenes/p' + page + '.webp")');
   const frame = node('div', '', 'scene-frame');
   frame.setAttribute('aria-hidden', 'true');
   for (let corner = 0; corner < 4; corner++) frame.append(node('span', '❦'));
@@ -543,7 +532,7 @@ function render() {
   } else {
     window.HraOpening?.detach();
     if (content && !sceneBodies[content]) slide.append(node('div', content, 'ornament'));
-    slide.append(node('p', chapter, 'eyebrow'), node('h1', title));
+    if (index !== 1) slide.append(node('p', chapter, 'eyebrow'), node('h1', title));
     if (description) slide.append(node('p', description, 'description'));
   }
   lastRendered = index;
@@ -554,6 +543,10 @@ function render() {
   }
   slide.append(node('span', index === 0 ? '2026.12.26  ·  JEJU' : 'HRA 2026  /  P' + page, 'corner'));
   updateReveal();
+  if (index === 1) {
+    const cleanup = owlEffect()?.enter(slide, owlApi(previous === 0 ? 'cover' : null));
+    if (typeof cleanup === 'function') owlCleanup = cleanup;
+  }
   notifyPresenter();
   get('number').textContent = page;
   const totalSpan = document.querySelector('.position span');
@@ -576,6 +569,10 @@ function updateReveal() {
 }
 
 function runCue() {
+  if (index === 1 && owlEffect()?.pending()) {
+    owlEffect().cue(slide, owlApi());
+    return;
+  }
   if (slide.classList.contains('awaiting-cue')) {
     revealed = true;
     slide.classList.remove('awaiting-cue');
@@ -689,6 +686,11 @@ addEventListener('message', event => {
 
 function go(position) {
   if (position < 0 || position >= slides.length || position === index) return;
+  // 2페이지: 다음을 누르면 PPT처럼 남은 부엉이 연출(펼침 건너뛰기, 말아 올리고 날아가기)을 먼저 한다
+  if (index === 1 && position === 2 && owlEffect()?.pending()) {
+    owlEffect().cue(slide, owlApi());
+    return;
+  }
   const move = () => { location.hash = 'p' + (position + 1); };
   // 1페이지에서 다음으로 넘어갈 때는 카메라가 성 안으로 들어간 뒤 이동
   if (index === 0 && position === 1 && window.HraOpening?.enter(move)) return;
