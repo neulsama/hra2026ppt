@@ -639,3 +639,19 @@ kbd{font:600 .85em system-ui,sans-serif;padding:.1em .5em;border:1px solid var(-
 }
 @keyframes card-arrive{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
 
+
+/* 4페이지 기숙사 배너, 5페이지 암전 (hrappt2026의 배너·암전을 옮김)
+   배너: 초대장 문장 그림, 다음 버튼마다 하나씩 떨어져 내려와 살짝 튕기고 흔들리다 멈춘다. 네 개가 화면을 꽉 채운다.
+   암전: 배너가 다 걸린 장면이 1.8초에 걸쳐 완전한 검정으로 가라앉는다. */
+.slide[data-content=banners] .scene-body,.slide[data-content=blackout] .scene-body{position:absolute;inset:0;margin:0;width:auto;animation:none}
+.banner-wall{position:relative;display:grid;grid-template-columns:repeat(4,1fr);height:100%}
+.banner-wall::before{content:"";position:absolute;z-index:2;inset:0 0 auto;height:1.5cqw;background:linear-gradient(#f6dc9c,#b8893f 55%,#6d4b1c);box-shadow:0 .3cqw .8cqw #000a}
+.banner-cloth{position:relative;display:grid;align-content:center;justify-items:center;gap:2cqw;padding:0 1cqw 6cqw;background:repeating-linear-gradient(90deg,#0000 0 1.6cqw,#0000000d 1.6cqw 2cqw),linear-gradient(90deg,#0006,#fff2 45%,#0005),var(--house);border-inline:.18cqw solid #d7ae6b;box-shadow:inset 0 .9cqw 0 #c9a061;clip-path:polygon(0 0,100% 0,100% 92%,50% 100%,0 92%);translate:0 -105%;transform-origin:50% 0}
+.banner-cloth::after{content:"";position:absolute;inset:auto 0 0;height:9%;background:repeating-linear-gradient(90deg,#e7c27a 0 .25cqw,#9b7232 .25cqw .5cqw);-webkit-mask:linear-gradient(#000,#0000);mask:linear-gradient(#000,#0000)}
+.banner-cloth.is-shown{translate:0 0}
+.slide[data-content=banners] .banner-cloth.is-shown{animation:banner-cloth-drop 1.3s cubic-bezier(.3,.6,.3,1) both}
+@keyframes banner-cloth-drop{0%{translate:0 -105%;rotate:0deg}55%{translate:0 2.5%;rotate:0deg}68%{translate:0 -1.2%;rotate:1.1deg}80%{translate:0 .5%;rotate:-.7deg}91%{translate:0 0;rotate:.3deg}100%{translate:0 0;rotate:0deg}}
+.banner-crest-img{width:min(17cqw,90%);filter:drop-shadow(0 .5cqw 1cqw #0009)}
+.banner-cloth-name{font:700 3.2cqw/1.2 var(--serif);color:#fff3dc;text-shadow:0 .2cqw .5cqw #000}
+.blackout-veil{position:absolute;inset:0;z-index:3;background:#000;animation:blackout-fall 1.8s .15s ease-in both}
+@keyframes blackout-fall{from{opacity:0}to{opacity:1}}

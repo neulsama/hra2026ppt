@@ -32,6 +32,34 @@ const houses = [
   { name: '후플푸프', color: '#e0b85b', crest: '🦡', desc: '성실과 헌신' },
 ];
 const get = id => document.getElementById(id);
+// 배너용 문장 그림과 색(초대장 hra26yep.vercel.app 과 같다). houses 배열과 같은 순서.
+const bannerArt = [
+  { crest: './art/crest_house_a.png', color: '#812D39' },
+  { crest: './art/crest_house_d.png', color: '#23654F' },
+  { crest: './art/crest_house_c.png', color: '#245179' },
+  { crest: './art/crest_house_b.png', color: '#BE9139' },
+];
+function houseBanners(allShown) {
+  const wall = node('div', '', 'banner-wall');
+  houses.forEach((house, i) => {
+    const banner = node('div', '', 'banner-cloth' + (allShown ? ' is-shown' : ''));
+    banner.style.setProperty('--house', bannerArt[i].color);
+    const crest = node('img', '', 'banner-crest-img');
+    crest.src = bannerArt[i].crest;
+    crest.alt = house.name + ' 문장';
+    banner.append(crest, node('strong', house.name, 'banner-cloth-name'));
+    wall.append(banner);
+  });
+  return wall;
+}
+// 4페이지에서 아직 내려오지 않은 배너가 있으면 하나 내린다.
+function dropNextBanner() {
+  if (index !== 3) return false;
+  const next = slide.querySelector('.banner-cloth:not(.is-shown)');
+  if (!next) return false;
+  next.classList.add('is-shown');
+  return true;
+}
 const storeKey = 'hra-live-slides-v2';
 const defaultGuests = [
   { name: '정하늘', role: '지도 교수 · 언론홍보학부', photo: './portraits/candidate-2.webp' },
@@ -372,21 +400,12 @@ const sceneBodies = {
     }
     renderCard();
   },
-  banners: body => {
-    const grid = node('div', '', 'house-banners-grid');
-    houses.forEach(house => {
-      const banner = node('div', '', 'house-banner');
-      banner.style.setProperty('--banner-accent', house.color);
-      banner.append(
-        node('div', house.crest, 'banner-crest'),
-        node('div', house.name, 'banner-name'),
-        node('div', house.desc, 'banner-sub')
-      );
-      grid.append(banner);
-    });
-    body.append(grid);
+  // 4페이지: 초대장 문장 그림의 배너 네 개가 화면을 꽉 채운다. 다음 버튼을 누를 때마다 하나씩 떨어져 내려온다.
+  banners: body => body.append(houseBanners(false)),
+  // 5페이지: 배너가 다 걸린 장면이 서서히 완전한 검정으로 가라앉는다.
+  blackout: body => {
+    body.append(houseBanners(true), node('div', '', 'blackout-veil'));
   },
-  blackout: () => {},
   'quiz-intro': body => {
     const reel = node('div', '', 'quiz-film-reel');
     const track = node('div', '', 'film-track');
@@ -522,7 +541,7 @@ function render() {
   slide.dataset.content = content ?? '';
   slide.dataset.page = page;
   slide.dataset.id = index === 1 ? 'welcome' : '';
-  slide.style.setProperty('--scene-image', index === 1 ? 'url("./scenes/p24.webp")' : 'url("./scenes/p' + page + '.webp")');
+  slide.style.setProperty('--scene-image', index === 1 ? 'url("./scenes/p24.webp")' : index === 3 || index === 4 ? 'url("./scenes/p06.webp")' : 'url("./scenes/p' + page + '.webp")');
   const frame = node('div', '', 'scene-frame');
   frame.setAttribute('aria-hidden', 'true');
   for (let corner = 0; corner < 4; corner++) frame.append(node('span', '❦'));
@@ -535,8 +554,8 @@ function render() {
   } else {
     window.HraOpening?.detach();
     if (content && !sceneBodies[content]) slide.append(node('div', content, 'ornament'));
-    if (index !== 1) slide.append(node('p', chapter, 'eyebrow'), node('h1', title));
-    if (description) slide.append(node('p', description, 'description'));
+    if (index !== 1 && index !== 3) slide.append(node('p', chapter, 'eyebrow'), node('h1', title));
+    if (description && index !== 3) slide.append(node('p', description, 'description'));
   }
   lastRendered = index;
   if (sceneBodies[content]) {
@@ -577,6 +596,7 @@ function updateReveal() {
 }
 
 function runCue() {
+  if (dropNextBanner()) return;
   if (index === 1 && owlEffect()?.pending()) {
     owlEffect().cue(slide, owlApi());
     return;
@@ -618,7 +638,7 @@ function setCaption(value) {
 
 function notifyPresenter() {
   if (!presenterWindow || presenterWindow.closed) return;
-  const next = index === 3 ? slides[5] : slides[index + 1];
+  const next = slides[index + 1];
   const reveal = !revealed && revealLabels.get(index);
   presenterWindow.postMessage({
     hra: 'stage', index, title: slides[index][1], next: next?.[0], scores: state.scores,
@@ -658,10 +678,10 @@ addEventListener('message', event => {
       render();
       break;
     case 'next':
-      go(index === 3 ? 5 : index + 1);
+      go(index + 1);
       break;
     case 'prev':
-      go(index === 5 ? 3 : index - 1);
+      go(index - 1);
       break;
     case 'cue':
       runCue();
@@ -694,6 +714,7 @@ addEventListener('message', event => {
 
 function go(position) {
   if (position < 0 || position >= slides.length || position === index) return;
+  if (position === index + 1 && dropNextBanner()) return;
   // 2페이지: 다음을 누르면 PPT처럼 남은 부엉이 연출(펼침 건너뛰기, 말아 올리고 날아가기)을 먼저 한다
   if (index === 1 && position === 2 && owlEffect()?.pending()) {
     owlEffect().cue(slide, owlApi());
